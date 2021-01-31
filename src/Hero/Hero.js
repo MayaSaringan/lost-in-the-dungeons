@@ -7,7 +7,7 @@ import {
   useRecoilValue,
 } from 'recoil';
 import Blade, {bladeState} from '../Weapons/Blade'
-
+import {BoundingBox, id} from '../Utility/'
 
 export const heroState = atom({
   key:'heroState',
@@ -17,10 +17,26 @@ export const heroState = atom({
 }) 
  
 
-const Hero =({startX,startY,isMoveValid, bladeRef}) => {
-  console.log(startX)
+const Hero =({parentBoundingBox, addBoundingBox, startX,startY }) => { 
+
+  const [boundingBox, setBoundingBox] = React.useState(new BoundingBox())
+  const heroRef = React.useRef();
+  const boundingBoxStyle = {width:20, height:20}
+  const ID = id();
+ 
   const [x, setX] = React.useState(startX)
   const [y, setY] = React.useState(startY)
+
+  React.useEffect(()=>{
+    console.log(parentBoundingBox)
+    
+    let boundingBoxRelViewPort = heroRef.current.getBoundingClientRect()
+    setBoundingBox(new BoundingBox(boundingBoxRelViewPort.top,boundingBoxRelViewPort.bottom, boundingBoxRelViewPort.left, boundingBoxRelViewPort.right)) 
+  },[x,y])
+  React.useEffect(()=>{
+    addBoundingBox(boundingBox, ID)
+  },[boundingBox])
+  console.log(boundingBox)
   const [speed, setSpeed] = React.useState(3)
   const [a, setA] = React.useState(0)
   const [d, setD] = React.useState(0)
@@ -127,9 +143,10 @@ const Hero =({startX,startY,isMoveValid, bladeRef}) => {
          }
          console.log("intended direction: "+direction)
     })
-   
-    if (isMoveValid({x:newX, y:newY})){
-
+    
+    if (boundingBox.isMoveWithinParent(parentBoundingBox,{x:newX, y:newY})){
+      console.log(newX)
+      console.log(newY)
       setX(newX)
       setY(newY)
      
@@ -137,7 +154,6 @@ const Hero =({startX,startY,isMoveValid, bladeRef}) => {
   }, [a,d,w,s])
    
   React.useEffect(()=>{
- //   console.log("x: "+x+"y: "+y)
     
     window.addEventListener("keydown",handleKeyDown);
     window.addEventListener("keypress",handleKeyDown);
@@ -151,7 +167,7 @@ const Hero =({startX,startY,isMoveValid, bladeRef}) => {
 
 
 
-  const heroRef = React.useRef();
+ 
   React.useEffect(()=>{
      if (weaponState >0 ){
 
@@ -161,16 +177,14 @@ const Hero =({startX,startY,isMoveValid, bladeRef}) => {
       return () => clearTimeout(weaponTimeout)
      } 
   },[ weaponState])
-  
-  console.log("hero x: "+x)
-  console.log("direction: "+direction)
+   
   let alignItems = direction=="left" ? 'flex-start' : direction=="right" ? 'flex-end' : 'center'
   let justifyContent = direction=="up" ? 'flex-start' : direction=="down" ? 'flex-end':'center'
   return (
-    <div ref={heroRef} style={{backgroundColor:'green', width:20, height:20, position:'absolute', top:y, left:x}}>
+    <div ref={heroRef} style={{backgroundColor:'green', ...boundingBoxStyle, position:'absolute', top:y, left:x}}>
       <div style={ {width:'100%', height:'100%', flexDirection:'column', display:'flex',alignItems:alignItems, justifyContent:justifyContent} }>
         <div style={{backgroundColor:'black', width:8, height:8}}/>
-        <Blade heroRef={heroRef} ref={bladeRef} state={weaponState} vertical={direction == 'up' || direction == 'down'} direction={direction} top={heroRef.current &&  heroRef.current.offsetTop} left={heroRef.current && heroRef.current.offsetLeft}/>
+        <Blade parentBoundingBox={parentBoundingBox} addBoundingBox={addBoundingBox} state={weaponState} vertical={direction == 'up' || direction == 'down'} direction={direction} top={heroRef.current &&  heroRef.current.offsetTop} left={heroRef.current && heroRef.current.offsetLeft}/>
       </div> 
     </div>
   );

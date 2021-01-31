@@ -8,6 +8,7 @@ import {
 } from 'recoil';
 
 import Blade, {bladeState} from '../Weapons/Blade'
+import {BoundingBox, id} from '../Utility/'
 
 export const monsterState = atom({
   key:'monsterState',
@@ -16,10 +17,25 @@ export const monsterState = atom({
   }
 }) 
 
-const Monster = ({startX,startY ,   reportDeath}) => {
+const Monster = ({parentBoundingBox, addBoundingBox, startX,startY ,   reportDeath}) => {
   const [x, setX] = React.useState(startX)
   const [y, setY] = React.useState(startY)
   const [health, setHealth] = React.useState(100) 
+  const [boundingBox, setBoundingBox] = React.useState(new BoundingBox())
+  const boundingBoxStyle = {width:20, height:20}
+  const ref = React.useRef();
+  const ID = id();
+
+  React.useEffect(()=>{
+    console.log(parentBoundingBox)
+    
+    let boundingBoxRelViewPort = ref.current.getBoundingClientRect()
+    setBoundingBox(new BoundingBox(boundingBoxRelViewPort.top,boundingBoxRelViewPort.bottom, boundingBoxRelViewPort.left, boundingBoxRelViewPort.right)) 
+  },[x,y])
+  React.useEffect(()=>{
+    addBoundingBox(boundingBox, ID)
+  },[boundingBox])
+
   React.useEffect(()=>{
     setX(startX)
     setY(startY)
@@ -61,7 +77,7 @@ const Monster = ({startX,startY ,   reportDeath}) => {
   },[x,y, blade]) 
   console.log("Monster healt is: "+health/100.0)
   return (
-    <div  style={{backgroundColor:'red', width:20, height:20, position:'absolute', top:y, left:x }}>
+    <div ref={ref}  style={{backgroundColor:'red',...boundingBoxStyle, position:'absolute', top:y, left:x }}>
       
     </div>
   );

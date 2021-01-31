@@ -1,0 +1,7 @@
+class Damage{
+  constructor(){
+
+  }
+
+  addBoundingBox
+}

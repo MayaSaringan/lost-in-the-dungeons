@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Room from "./Room/Room"
-import Hero, {heroState} from '../Hero/Hero'
+import Room from "./Room/Room" 
 import { 
   atom,
   selector,
@@ -9,14 +8,8 @@ import {
   useRecoilValue,
 } from 'recoil';
 import { BoundingBox } from '../Utility';
-
-export const dungeonState = atom({
-  key:'dungeonState',
-  default: { 
-    rooms:{}
-  }
-}) 
-const Dungeon = () => { 
+ 
+const RenderingInstance = () => { 
   
   const boundingBox =  new BoundingBox() 
   const ref = React.useRef();
@@ -54,4 +47,4 @@ const Dungeon = () => {
   );
 }
 
-export default Dungeon;
+export default RenderingInstance;

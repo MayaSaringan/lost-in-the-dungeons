@@ -21,30 +21,6 @@ const Entity = ({startX,startY  }) => {
   const [speed, setSpeed] = React.useState(3) 
 
  
-/*
-  React.useEffect(()=>{
-    console.log("hit??")
-    let monsterRect = {
-      top: y,
-      bottom: y+20,
-      left: x,
-      right:x+20
-    }
-    let bladeRect ={
-      top: bladeRef.current && bladeRef.current.offsetTop,
-      bottom: bladeRef.current && bladeRef.current.offsetBottom,
-      left: bladeRef.current &&bladeRef.current.offsetLeft,
-      right: bladeRef.current && bladeRef.current.offsetRight
-    }
-    var overlap = !(monsterRect.right < bladeRect.left || 
-      monsterRect.left > bladeRect.right || 
-      monsterRect.bottom < bladeRect.top || 
-      monsterRect.top > bladeRect.bottom)
-    if (overlap){
-      console.log("HIT")
-      setHealth(health-25)
-    }
-  },[x,y, bladeRef.current && bladeRef.current.offsetTop, bladeRef.current && bladeRef.current.offsetLeft])*/
   return (
     <div style={{backgroundColor:'red', width:width, height:height, position:'absolute', top:y, left:x, opacity: health/100.0}}>
       

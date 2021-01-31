@@ -17,21 +17,28 @@ const generateMonsterPos = (roomInfo) => {
 }
 const Room = ({roomID }) => {
 
-
+  const boundingBoxes = []
   const roomRef = React.useRef();
   
  // const [dungeon ] = useRecoilValue(dungeonState)
- // const [boundingBox, setBoundingBox] = 
+  const [boundingBox, setBoundingBox] = React.useState(new BoundingBox())
 
-  React.useEffect(()=>{
-  //  boundingBox.setBoundingBox(roomRef.current.offsetTop, roomRef.current.offsetBottom, roomRef.current.offsetLeft, roomRef.current.offsetRight)
-  },[])
   const [offset, setOffset] = React.useState({x:-1, y:-1})
   const borderWidth = 5
   const roomDims = 200
   const roomStyle = {width:200, height:200, backgroundColor:'black', alignItems:'center',justifyContent:'center', display:'flex'}
  
   const innerRoomStyle = {width:roomDims-(borderWidth*2), height:roomDims-(borderWidth*2), backgroundColor:'grey'}
+  
+  React.useEffect(()=>{
+    let boundingBoxRelViewPort = roomRef.current.getBoundingClientRect()
+    setBoundingBox(new BoundingBox(boundingBoxRelViewPort.top,boundingBoxRelViewPort.bottom, boundingBoxRelViewPort.left, boundingBoxRelViewPort.right))
+  },[])
+
+  const addBoundingBox = (boundingBox, ID) => {
+    boundingBoxes[ID] = boundingBox
+    
+  }
   const [hero, setHero] = useRecoilState(heroState)
   const isMoveValid = ({x, y}) =>{
     if (x<= offset.x + innerRoomStyle.width - 20 && x>= offset.x + 0 && y<= offset.y + innerRoomStyle.height - 20 && y >= offset.y + 0){
@@ -63,7 +70,7 @@ const Room = ({roomID }) => {
   })
 
 
-  const bladeRef = React.useRef(); 
+ 
   React.useEffect(()=>{
     setOffset({x: roomRef.current.offsetLeft, y: roomRef.current.offsetTop}) 
   },[roomRef.current])
@@ -87,13 +94,13 @@ const Room = ({roomID }) => {
   return (
     <div style={roomStyle}  >
       <div style={innerRoomStyle} ref={roomRef}>
-        { hero.roomID == roomID && Object.keys(monsters).map(monsterKey => {
+        { hero.roomID == roomID && Object.keys(monsters).map(monsterKey => { 
           return (
-            <Monster startX={monsters[monsterKey].x} startY = {monsters[monsterKey].y } reportDeath={reportDeath} ></Monster>
+            <Monster  parentBoundingBox={boundingBox} addBoundingBox={addBoundingBox} startX={monsters[monsterKey].x} startY = {monsters[monsterKey].y } reportDeath={reportDeath} ></Monster>
           )
         })} 
         { hero.roomID == roomID && (
-          <Hero startX={ roomInfo.left + Math.floor(roomInfo.width/2) - 10  } startY = {roomInfo.top + Math.floor(roomInfo.height/2) -10 }   isMoveValid={isMoveValid} bladeRef={bladeRef} ></Hero>
+          <Hero  parentBoundingBox={boundingBox} addBoundingBox={addBoundingBox}  startX={ boundingBox.left + Math.floor(boundingBox.getCentroid().x) - 10  } startY = {boundingBox.top + Math.floor(boundingBox.getCentroid().y) -10 }  ></Hero>
         )}
       </div>
     </div>
