@@ -9,6 +9,7 @@ import {
  
 import {BoundingBox, id} from '../Utility'
 import * as store from '../recoil'
+import {AutonomousEntity} from './Entity'
 
 export const monsterState = atom({
   key:'monsterState',
@@ -17,7 +18,13 @@ export const monsterState = atom({
   }
 }) 
 
-const Monster = ({parentBoundingBox,  startX,startY ,   reportDeath}) => {
+const Monster = (props) => {
+  
+  return (
+    <AutonomousEntity {...props} >
+    </AutonomousEntity>
+  )
+  /*
   const [x, setX] = React.useState(startX)
   const [y, setY] = React.useState(startY)
   const [health, setHealth] = React.useState(100) 
@@ -71,7 +78,7 @@ const Monster = ({parentBoundingBox,  startX,startY ,   reportDeath}) => {
     <div ref={ref}  style={{backgroundColor:'red',...boundingBoxStyle, position:'absolute', top:y, left:x }}>
       
     </div>
-  );
+  );*/
 }
 
 export default Monster;

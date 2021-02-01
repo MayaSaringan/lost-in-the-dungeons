@@ -11,8 +11,9 @@ import {Monster} from '../../Entity'
 import { BoundingBox, id } from '../../Utility'; 
 import * as store from '../../recoil'
 const generateMonsterPos = (roomInfo) => {
-  let x = roomInfo.left - 10 + Math.random()*roomInfo.width
-  let y =  roomInfo.top - 10 + Math.random()*roomInfo.height
+  let x = roomInfo.left - 10 + Math.random()*roomInfo.getWidth()
+  let y =  roomInfo.top - 10 + Math.random()*roomInfo.getHeight()
+  console.log({x,y})
   return {x,y}
 }
 const Room = ({roomID }) => {
@@ -83,18 +84,23 @@ const Room = ({roomID }) => {
     console.log(roomInfo)
     let newMonsters = {...monsters}
     Object.keys(newMonsters).map(key => {
-      newMonsters[key] = {...newMonsters[key], ...generateMonsterPos(roomInfo)}
+      newMonsters[key] = {...newMonsters[key], ...generateMonsterPos(boundingBox)}
     })
     setMonsters(newMonsters)
     
-  },[offset]) 
+  },[boundingBox]) 
 
   return (
     <div style={roomStyle}  >
       <div style={innerRoomStyle} ref={roomRef}>
         { hero.roomID == roomID && Object.keys(monsters).map(monsterKey => { 
+          console.log(boundingBox)
+          console.log(monsters[monsterKey])
           return (
-            <Monster  parentBoundingBox={boundingBox} startX={monsters[monsterKey].x} startY = {monsters[monsterKey].y } reportDeath={reportDeath} ></Monster>
+            <Monster  parentBoundingBox={boundingBox}   startX={boundingBox.left - 10 + Math.random()*boundingBox.getWidth()}
+             startY = {boundingBox.left - 10 + Math.random()*boundingBox.getHeight() }  
+           /* startX={ boundingBox.left + Math.floor(boundingBox.getCentroid().x) - 10  } startY = {boundingBox.top + Math.floor(boundingBox.getCentroid().y) -10 }*/
+            reportDeath={reportDeath} ></Monster>
           )
         })} 
         { hero.roomID == roomID && (

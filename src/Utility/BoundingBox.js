@@ -48,7 +48,7 @@ class BoundingBox {
   }
 
   isWithinBoundingBox = (boundingBoxA ) => {
-    return (this.right<  boundingBoxA.right  &&  this.left >  boundingBoxA.left + 0 && this.bottom <  boundingBoxA.bottom  && this.top >  boundingBoxA.top)
+    return (this.right<=  boundingBoxA.right  &&  this.left >=  boundingBoxA.left + 0 && this.bottom <=  boundingBoxA.bottom  && this.top >=  boundingBoxA.top)
   }
 
   isMoveWithinParent = (boundingBoxA, move ) => {
