@@ -7,9 +7,9 @@ import {
   useRecoilValue,
 } from 'recoil';
 import Blade from '../Weapons/Blade'
-import {BoundingBox, id} from '../Utility/'
-import * as store from '../recoil'
-
+import {BoundingBox, id} from '../Utility'
+import * as store from '../recoil' 
+import {ControlledEntity} from './Entity'
 export const heroState = atom({
   key:'heroState',
   default: {
@@ -18,8 +18,14 @@ export const heroState = atom({
 }) 
  
 
-const Hero =({parentBoundingBox,  startX,startY }) => { 
-
+const Hero =(props) => { 
+  return (
+    <ControlledEntity {...props} >
+      <Blade  />
+    </ControlledEntity>
+  )
+  /*
+  const [controller,] = React.useState(new Controller(directionalKeys));
   const [boundingBox, setBoundingBox] = React.useState(new BoundingBox())
   const heroRef = React.useRef();
   const boundingBoxStyle = {width:20, height:20}
@@ -48,52 +54,13 @@ const Hero =({parentBoundingBox,  startX,startY }) => {
   const [d, setD] = React.useState(0)
   const [w, setW] = React.useState(0)
   const [s, setS] = React.useState(0)
-
+ 
   const [direction, setDirection] = React.useState("down")
   React.useEffect(()=>{
     setX(startX)
     setY(startY)
   },[startX,startY])
-  const handleKeyDown = (evt) => {  
-    evt.preventDefault();
-    console.log("keydown key: "+evt.key)
-    switch ( evt.key) {
-      case 'd':
-        setD(d+1)
-        break;
-      case 'a':
-        setA(a+1)
-        break;
-      case 'w':
-        setW(w+1)
-        break;
-      case 's':
-        setS(s+1)
-        break; 
-      default:
-      
-    } 
-    
-  }
-  const handleKeyUp = (evt) => {  
-    evt.preventDefault();
-    switch ( evt.key) {
-      case 'd':
-        setD(0)
-        break;
-      case 'a':
-        setA(0)
-        break;
-      case 'w':
-        setW(0)
-        break;
-      case 's':
-        setS(0)
-        break;
-      default:
-    }
-    
-  }
+
   React.useEffect(()=>{ 
     let newX = x
     let newY = y 
@@ -145,13 +112,21 @@ const Hero =({parentBoundingBox,  startX,startY }) => {
    
   React.useEffect(()=>{
     
-    window.addEventListener("keydown",handleKeyDown);
-    window.addEventListener("keypress",handleKeyDown);
-    window.addEventListener("keyup",handleKeyUp);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown)
-      window.removeEventListener("keypress", handleKeyDown)
-      window.removeEventListener("keyup", handleKeyUp)
+
+    controller.addEventListener('kd-a', ()=>setA(a+1))
+    controller.addEventListener('kd-d', ()=>setD(d+1))
+    controller.addEventListener('kd-w', ()=>setW(w+1))
+    controller.addEventListener('kd-s', ()=>setS(s+1))
+    controller.addEventListener('ku-a', ()=>setA(0))
+    controller.addEventListener('ku-d', ()=>setD(0))
+    controller.addEventListener('ku-w', ()=>setW(0))
+    controller.addEventListener('ku-s', ()=>setS(0))
+    
+    let ret = controller.init(true)
+    return () =>{
+       controller.removeAllListeners()
+       ret();
+     // controller.init(true)
     }
   },[ x,y,a,s,d,w ])
 
@@ -167,7 +142,7 @@ const Hero =({parentBoundingBox,  startX,startY }) => {
         <Blade parentBoundingBox={parentBoundingBox}  vertical={direction == 'up' || direction == 'down'} direction={direction} top={heroRef.current &&  heroRef.current.offsetTop} left={heroRef.current && heroRef.current.offsetLeft}/>
       </div> 
     </div>
-  );
+  );*/
 }
 
 export default Hero;

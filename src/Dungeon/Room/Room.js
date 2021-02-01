@@ -6,8 +6,8 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
-import Hero, {heroState} from '../../Hero/Hero'
-import Monster, {monsterState} from '../../Monster/Monster'
+import Hero, {heroState} from '../../Entity/Hero'
+import {Monster} from '../../Entity'
 import { BoundingBox, id } from '../../Utility'; 
 import * as store from '../../recoil'
 const generateMonsterPos = (roomInfo) => {

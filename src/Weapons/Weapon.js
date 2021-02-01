@@ -6,65 +6,61 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil';
-import {BoundingBox, id} from '../Utility/'
-import Weapon from './Weapon'
+import Blade from '../Weapons/Blade'
+import {BoundingBox, id} from '../Utility'
+import Controller , {directionalKeys, enterKey} from '../Entity/Controller'
 import * as store from '../recoil' 
-const Blade = (props) => { 
-
-  return (
-    <Weapon {...props} style={{width:20, height:5}}/>
-  )
-  /*
+  
+ 
+const Weapon = ({ parentBoundingBox, style ,direction}) =>{
+  const [controller,] = React.useState(new Controller(enterKey));
   const [drawStyle, setDrawStyle] = React.useState({}) 
-  const ref = React.useRef()
+  const ref = React.useRef() 
+  const [ID, ] = React.useState(id()) 
+ 
   const [boundingBox, setBoundingBox] = React.useState(new BoundingBox())
   const [storeBoundingBox, setStoreBoundingBox] = useRecoilState(store.boundingBox)
   const [storeEntities, setStoreEntities] = useRecoilState(store.entities)
-  const [ID, setID] = React.useState(id()) 
+   
 
   const [weaponState, setWeaponState]  = React.useState(0)
   const weaponStateRef = React.useRef(weaponState)
   weaponStateRef.current = weaponState
-  let weaponTimeout = null
-  const handleKeyDown = (evt) => {   
-    console.log("keydown key: "+evt.key)
-    switch ( evt.key) {
-    
-      case 'Enter':
-        setWeaponState(1)
-      default:
-      
-    } 
-    
-  }
+  let weaponTimeout = null 
+
   React.useEffect(()=>{
     let boundingBoxRelViewPort = ref.current.getBoundingClientRect()
     setBoundingBox(new BoundingBox(boundingBoxRelViewPort.top,boundingBoxRelViewPort.bottom, boundingBoxRelViewPort.left, boundingBoxRelViewPort.right))
   },[ weaponState,parentBoundingBox])
 
   React.useEffect(()=>{
-    
-    window.addEventListener("keydown",handleKeyDown);  
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown) 
-    }
-  },[ weaponState ])
-
-  React.useEffect(()=>{
-    if (weaponState >0 ){
-
-     weaponTimeout = setTimeout(()=>{
-       setWeaponState(0);
-       console.log("sheath")}, 1000)
-     return () => clearTimeout(weaponTimeout)
-    } 
- },[ weaponState])
-  React.useEffect(()=>{
     setStoreBoundingBox({
       ...storeBoundingBox,
       [ID]: boundingBox
     })
   },[boundingBox])
+
+   
+
+  React.useEffect(()=>{
+    console.log("weapon state change")
+    if (weaponState >0 ){
+
+     weaponTimeout = setTimeout(()=>{
+       setWeaponState(0);}, 400)
+     return () => clearTimeout(weaponTimeout)
+    } 
+ },[ weaponState])
+ 
+  React.useEffect(()=>{
+    controller.addEventListener('ku-Enter', ()=>{
+      setWeaponState(1)}) 
+    let ret = controller.init(true)
+    return () =>{
+       controller.removeAllListeners()
+       ret();
+    }
+  },[ weaponState ])
   React.useEffect(()=>{
 
     if (weaponState ==1){
@@ -92,40 +88,22 @@ const Blade = (props) => {
   },[direction, weaponState])
 
   React.useEffect(()=>{
-    console.log("hit??") 
-    console.log(storeBoundingBox)
-    console.log(ID)
 
     
     for (let i = 0; i<Object.keys(storeBoundingBox).length; i++ ) {
       const key =  Object.keys(storeBoundingBox)[i] 
-      console.log(key)
       if (key == ID ) {
-        console.log("is same key")
         continue;
       }
-      console.log("checking store entities")
-      console.log(storeEntities)
-     console.log(Object.keys(storeEntities))
-     console.log(  storeEntities[key])
       if (  storeEntities[key]){ 
-        console.log("looking at key: "+key)
         if (!storeEntities[key]) break
         if (storeEntities[key].type != "monster"){
-          
-        console.log("emtitie not a monster")
           continue;
         }
-
-        console.log("is a monster")
         let monsterRect = storeBoundingBox[key].getBoundingBox();
         let bladeRect = boundingBox
-        console.log(monsterRect)
-        console.log(bladeRect)
         
         var overlap = weaponState>0 && boundingBox.isCollidingWith(monsterRect)
-        console.log(weaponState>0)
-        console.log(boundingBox.isCollidingWith(monsterRect))
 
         if (overlap){
           console.log("HIT")
@@ -145,11 +123,13 @@ const Blade = (props) => {
     }
 
   },[drawStyle, boundingBox, weaponState]) 
+  
   const vertical = direction == 'up' || direction == 'down'
   return (
-    <div ref={ref}  style={{width:vertical ? 5 : 20, height: vertical? 20: 5, backgroundColor:'white', position:'absolute', top:  drawStyle["top"] + (vertical ? 0: 10), left:  drawStyle["left"] + (vertical ? 10:  0) }}></div>
-  )
-  */
+    <div ref={ref}  style={{
+      width:vertical ? style.height : style.width, height: vertical? style.width: style.height,
+      backgroundColor:'white', position:'absolute', top:  drawStyle["top"] + (vertical ? 0: 10), left:  drawStyle["left"] + (vertical ? 10:  0) }}></div>
+  ) 
 }
 
-export default Blade;
+export default Weapon;

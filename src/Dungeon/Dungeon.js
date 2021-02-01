@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Room from "./Room/Room"
-import Hero, {heroState} from '../Hero/Hero'
+import {Hero, heroState} from '../Entity'
 import { 
   atom,
   selector,
