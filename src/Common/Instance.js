@@ -9,7 +9,7 @@ import {
 } from 'recoil';
 import { BoundingBox } from '../Utility';
  
-const RenderingInstance = () => { 
+const Instance = () => { 
   
   const boundingBox =  new BoundingBox() 
   const ref = React.useRef();
@@ -47,4 +47,4 @@ const RenderingInstance = () => {
   );
 }
 
-export default RenderingInstance;
+export default  Instance;

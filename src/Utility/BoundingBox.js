@@ -38,7 +38,7 @@ class BoundingBox {
     this.left = left;
     this.right = right;
   }
-  GetBoundingBox = () => {
+  getBoundingBox = () => {
     return {
       top: this.top,
       bottom: this.bottom,
@@ -53,6 +53,18 @@ class BoundingBox {
 
   isMoveWithinParent = (boundingBoxA, move ) => {
     return ( move.x + this.getWidth() <  boundingBoxA.right  &&  move.x  >  boundingBoxA.left + 0 && move.y + this.getHeight() <  boundingBoxA.bottom  && move.y>  boundingBoxA.top)
+  }
+
+  isCollidingWith = (boundingBox) => {
+    console.log({right: this.right, left: this.left,top:  this.top, bottom: this.bottom})
+    console.log({right: boundingBox.right, left: boundingBox.left,top:  boundingBox.top, bottom: boundingBox.bottom})
+    const aLeftOfB = this.right < boundingBox.left;
+    const aRightOfB = this.left > boundingBox.right;
+    const aAboveB = this.top > boundingBox.bottom;
+    const aBelowB = this.bottom < boundingBox.top;
+    console.log({aLeftOfB: aLeftOfB,aRightOfB:aRightOfB, aAboveB:aAboveB, aBelowB:aBelowB })
+
+    return !( aLeftOfB || aRightOfB || aAboveB || aBelowB );
   }
 
 

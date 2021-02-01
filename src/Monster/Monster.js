@@ -9,6 +9,7 @@ import {
 
 import Blade, {bladeState} from '../Weapons/Blade'
 import {BoundingBox, id} from '../Utility/'
+import * as store from '../recoil'
 
 export const monsterState = atom({
   key:'monsterState',
@@ -17,64 +18,55 @@ export const monsterState = atom({
   }
 }) 
 
-const Monster = ({parentBoundingBox, addBoundingBox, startX,startY ,   reportDeath}) => {
+const Monster = ({parentBoundingBox,  startX,startY ,   reportDeath}) => {
   const [x, setX] = React.useState(startX)
   const [y, setY] = React.useState(startY)
   const [health, setHealth] = React.useState(100) 
   const [boundingBox, setBoundingBox] = React.useState(new BoundingBox())
+  const [storeBoundingBox, setStoreBoundingBox] = useRecoilState(store.boundingBox)
+  const [entities, setEntities] = useRecoilState(store.entities)
   const boundingBoxStyle = {width:20, height:20}
   const ref = React.useRef();
-  const ID = id();
+  const [ID, setID] = React.useState(id())
+  console.log("Monster ID is "+ID)
+  console.log(entities)
 
   React.useEffect(()=>{
-    console.log(parentBoundingBox)
-    
     let boundingBoxRelViewPort = ref.current.getBoundingClientRect()
     setBoundingBox(new BoundingBox(boundingBoxRelViewPort.top,boundingBoxRelViewPort.bottom, boundingBoxRelViewPort.left, boundingBoxRelViewPort.right)) 
   },[x,y])
+
   React.useEffect(()=>{
-    addBoundingBox(boundingBox, ID)
+    setStoreBoundingBox({
+      ...storeBoundingBox,
+      [ID]: boundingBox
+    })
   },[boundingBox])
+
+  React.useEffect(()=>{
+    setEntities({
+      ...entities,
+      [ID]: {
+        type: 'monster',
+        health: health
+      }
+    })
+  },[])
+
+  React.useEffect(()=>{
+    if (!entities[ID]) return;
+    setHealth(entities[ID].health)
+    if (entities[ID].health<=0){
+      reportDeath();
+    }
+  },[entities])
 
   React.useEffect(()=>{
     setX(startX)
     setY(startY)
   },[startX,startY])
-  const [speed, setSpeed] = React.useState(3) 
-  const [blade, setBlade] = useRecoilState(bladeState)
+  const [speed, setSpeed] = React.useState(3)  
 
- 
- 
-  React.useEffect(()=>{
-    console.log("hit??")
-    let monsterRect = {
-      top: y,
-      bottom: y+20,
-      left: x,
-      right:x+20
-    }
-    let bladeRect ={
-      top:blade && blade.top,
-      bottom:blade && blade.bottom,
-      left: blade && blade.left,
-      right:blade && blade.right,
-    }
-    console.log(bladeRect)
-    var overlap = blade && blade.drawn && monsterRect.right && monsterRect.left && monsterRect.top && monsterRect.bottom &&  bladeRect.right && bladeRect.left && bladeRect.top && bladeRect.bottom &&  !(monsterRect.right < bladeRect.left || 
-      monsterRect.left > bladeRect.right || 
-      monsterRect.bottom < bladeRect.top || 
-      monsterRect.top > bladeRect.bottom)
-    if (overlap){
-      console.log("HIT")
-      let newHealth = health-25
-      setHealth(newHealth)
-      if (newHealth <=0){
-        
-        console.log("Monster curr halth is : "+newHealth)
-        reportDeath();
-      }
-    }
-  },[x,y, blade]) 
   console.log("Monster healt is: "+health/100.0)
   return (
     <div ref={ref}  style={{backgroundColor:'red',...boundingBoxStyle, position:'absolute', top:y, left:x }}>
